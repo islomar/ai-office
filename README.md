@@ -1,44 +1,173 @@
 # ai-office
 
-My AI-native workspace: the hub for the skills, agents, workflows, decisions and knowledge I use with coding agents.
-It is public on purpose, to show what I am doing, testing and learning.
+My AI-native workspace.
+It holds what I and my coding agents need across all my projects: skills, decisions, knowledge and tasks.
+The code of each project stays in its own repository.
 
-It follows the approach described in
-[Turning up the dial: seeing the forest while working on any tree](https://www.eferro.net/2026/10/turning-up-dial-seeing-forest-while.html):
+This repository is public, to show what I am doing, testing and learning.
+Anything private goes to a separate private repository.
 
-- If it is not in the repository, it does not exist.
-- Delegation to agents can only go as far as the engineering practices behind it: small safe steps, tests, trunk-based development, validation in the running system.
-- Rules written as prose get ignored. Rules turned into tools and checks get followed.
+## The idea in three rules
 
-## Layout
+This repository follows
+[Turning up the dial: seeing the forest while working on any tree](https://www.eferro.net/2026/10/turning-up-dial-seeing-forest-while.html).
 
-See [AGENTS.md](AGENTS.md) for the layout and the working rules that agents follow.
+1. **If it is not in this repository, it does not exist.**
+   A learning that only lives in an agent's memory or in my head is lost.
+   Write it here.
+2. **Delegate to agents only as far as the safety net allows.**
+   The safety net is small steps, tests, checks and validation where the code runs.
+3. **A rule that keeps being broken becomes a tool or a check, not more text.**
+   For example, `make check` fails when a record has a wrong ID, so nobody has to remember the ID format.
 
-## Install a skill in another project
+## Back after months away? Start here
 
-Skills live in `skills/<name>/SKILL.md`, the layout read by the [skills CLI](https://github.com/vercel-labs/skills).
-It installs one skill into Claude Code, OpenCode, GitHub Copilot, Codex, Pi, Hermes Agent and other agents:
+1. The repository must be at `~/workspace/ai-office`.
+   Skills and scripts use that path.
+2. Run the setup once per machine:
+
+   ```bash
+   cd ~/workspace/ai-office
+   make setup         # installs Python dependencies with uv, turns on the pre-commit hook
+   make link-skills   # makes every skill here available to Claude Code in all repositories
+   make check         # runs the tests and checks every record: it must say "ok"
+   ```
+
+3. See what exists:
+
+   ```bash
+   make skills        # the skills, one line each
+   ls decisions/      # what was decided, and why
+   ls knowledge/      # what was learned
+   ls tasks/          # what is pending
+   ```
+
+4. Read [AGENTS.md](AGENTS.md): it holds the rules that agents follow here.
+
+Requirements: [uv](https://docs.astral.sh/uv/), `make`, `git`, the `gh` CLI logged in, and Node.js 22.20 or later for the skills CLI.
+
+## What goes in each folder
+
+| Folder | What goes in it | Example | How to add one |
+| --- | --- | --- | --- |
+| `skills/` | Agent skills: a flow an agent follows, one folder per skill with a `SKILL.md` | `skills/ship/SKILL.md`: lint, commit and push | Create `skills/<name>/SKILL.md`, then `make link-skills` |
+| `decisions/` | Decision records: what I decided, why, and what it costs | `DR-48d815`: one public repository, skills installable one by one | `uv run ai-office new decision "Title"` |
+| `knowledge/` | Durable learnings any agent can read, instead of per-user agent memory | How a tool behaves, a pitfall, a working setup | `uv run ai-office new knowledge "Title"` |
+| `tasks/` | Pending work for this repository, one file per task, with a why and a status | Move a skill here from another repository | `uv run ai-office new task "Title"` |
+| `templates/` | Files that tools copy into other repositories | `skills-update.yml`: the weekly skill update workflow | Add the file and the tool that copies it |
+| `tools/` | Python code behind the `ai-office` command | `skills.py`: list and install skills | Add code with tests in `tests/` |
+| `tests/` | Tests for `tools/` and `templates/` | `test_skills.py` | `make test` runs them |
+| `.githooks/` | The pre-commit hook: runs `make check` before every commit | | `make setup` turns it on |
+
+Each of `tasks/`, `decisions/` and `knowledge/` has a README with its required front matter and statuses.
+Create records with `uv run ai-office new`, never by hand: it adds a random ID (for example `DR-48d815`), so two sessions never pick the same number.
+
+## Two kinds of skills
+
+| Kind | Where it runs | How it gets there | Examples |
+| --- | --- | --- | --- |
+| **Personal** | In every repository on my machine, only for me | A link in `~/.claude/skills/`, made by `make link-skills` | `ship`, `list-my-skills`, `install-my-skill` |
+| **Project** | In one repository, for anyone and any CI agent working on it | A committed copy in that repository, made by `/install-my-skill` | A review checklist for one project's tickets |
+
+A personal skill may depend on my machine: `ship` uses scripts from my dotfiles.
+A project skill must work on any machine that clones the repository.
+
+## How to
+
+### Use a skill
+
+In Claude Code, type `/<skill-name>`, for example `/ship`.
+Skills in `skills/` work in every repository after `make link-skills`.
+
+### Create a new skill
+
+1. Create `skills/<name>/SKILL.md` with front matter `name` and `description`.
+   The description says when to use it: agents read it to decide.
+2. Put any script the skill needs in `tools/`, with tests.
+3. Run `make link-skills`, then try `/<name>` in a new Claude Code session.
+4. Commit and push with `/ship`.
+
+### Change a skill
+
+Edit `skills/<name>/SKILL.md`.
+On this machine the change applies at once, because `~/.claude/skills/<name>` is a link to this folder.
+Push it with `/ship`.
+Repositories that hold a copy get a pull request with the change the next Monday (see below).
+
+### List my skills
+
+`/list-my-skills` in Claude Code, or `make skills` here.
+Run in another repository, it also marks the skills installed there.
+
+### Install a skill into another repository
+
+In that repository, run `/install-my-skill <name>`.
+It checks the skill is pushed, shows what it will do and waits for my yes. Then it:
+
+1. installs the skill with the skills CLI into `.agents/skills/<name>`, with a link in `.claude/skills/<name>`, and records it in `skills-lock.json`;
+2. adds the workflow `.github/workflows/skills-update.yml`;
+3. allows GitHub Actions to open pull requests in that repository, if it was not allowed.
+
+It does not commit: review the files, then `/ship` or commit by hand.
+
+Without Claude Code, the same steps by hand:
 
 ```bash
-npx -y skills@1.7.6 add islomar/ai-office --list
-npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code -a opencode
+uv run --project ~/workspace/ai-office ai-office install-plan <name>   # checks and prints the command
+npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code -a opencode -y
+uv run --project ~/workspace/ai-office ai-office write-workflow
 ```
 
-The CLI version is pinned. `uv run ai-office install-plan <name>` prints the install command and says when a newer release has been public for at least 7 days.
-In Claude Code, `/list-my-skills` and `/install-my-skill <name>` wrap these commands.
+### Keep installed skills up to date
 
-`/install-my-skill` also writes [`templates/skills-update.yml`](templates/skills-update.yml) to `.github/workflows/` in the target repository.
-Every Monday it runs `skills check`; when an installed skill has a new version, it runs `skills update` and opens a pull request for review.
+Nothing to do.
+Every Monday at 06:00 UTC, `skills-update.yml` checks each repository's skills against this repository.
+When a skill changed, it opens a pull request "Update skills from ai-office". Review it and merge it.
+To run it now: the repository's Actions tab, "Update skills", "Run workflow".
 
-## Development
+Pull requests opened by that workflow do not start the repository's other workflows, so CI does not run on them.
 
-Requires [uv](https://docs.astral.sh/uv/) and `make`.
+### Update the skills CLI version
+
+The skills CLI is pinned to one version (now 1.7.6), so a new and possibly compromised npm release never runs unnoticed.
+`/install-my-skill` says `UPDATE AVAILABLE` when a newer release has been public for at least 7 days.
+Then:
+
+1. Read the release notes of the new version.
+2. Change the version in three places:
+   - `SKILLS_CLI_PINNED` in `tools/ai_office/skills.py`
+   - `SKILLS_CLI` in `templates/skills-update.yml`
+   - the allow rule `Bash(npx -y skills@<version> *)` in `~/.claude/settings.json`
+3. Run `make check`: a test fails if the first two disagree.
+4. Run `/install-my-skill` in each repository that has the workflow: it reports the workflow as outdated and rewrites it.
+
+### Record a decision, a learning or a task
 
 ```bash
-make setup   # install dependencies and enable the pre-commit hook
-make check   # run the tests and check every record
-uv run ai-office new task "Title"
+uv run ai-office new decision "Use X instead of Y"
+uv run ai-office new knowledge "How X behaves when Y"
+uv run ai-office new task "Do X"
 ```
+
+Each command prints the new file. Open it and fill the sections its folder README describes.
+
+## Rules
+
+- Nothing private: no credentials, hostnames, machine state, names of other people, employers or clients.
+- Run `make check` before committing. The pre-commit hook runs it too.
+- Commit on `main`, in small steps.
+- Knowledge goes in `knowledge/`, never in per-user agent memory.
+  `make check` fails if an instruction file points to that memory.
+
+## When something does not work
+
+| Symptom | Fix |
+| --- | --- |
+| A skill does not appear in Claude Code | Run `make link-skills`, then start a new session |
+| `/install-my-skill` says `BLOCKED: ... not pushed` | Commit and push this repository first: the skills CLI installs from GitHub |
+| `npx -y skills@...` asks for permission | The allow rule in `~/.claude/settings.json` does not match the pinned version |
+| `make check` fails | Read the file and line it prints. Records need the front matter their folder README lists |
+| The update workflow never opens a pull request | In the repository: Settings, Actions, General, allow GitHub Actions to create pull requests. `install-plan` prints the command |
 
 ## License
 

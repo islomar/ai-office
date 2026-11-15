@@ -33,3 +33,7 @@ make setup   # install dependencies and enable the pre-commit hook
 make check   # run the tests and check every record
 uv run ai-office new task "Title"
 ```
+
+## License
+
+[MIT](LICENSE)

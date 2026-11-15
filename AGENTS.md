@@ -22,6 +22,7 @@ Anything private belongs in a separate private repository.
 | `tasks/`     | One file per task, with a why and a status                   |
 | `decisions/` | Decision records: context, decision, consequences            |
 | `knowledge/` | Durable learnings, readable by any agent harness             |
+| `instructions/` | Global rules for every agent, linked into each one by `make link-instructions` |
 | `skills/`    | Agent skills, one folder per skill: `skills/<name>/SKILL.md` |
 | `templates/` | Files that tools copy into other repositories                |
 | `tools/`     | Deterministic Python tools that skills call                  |

@@ -30,6 +30,7 @@ This repository follows
    cd ~/workspace/ai-office
    make setup         # installs Python dependencies with uv, turns on the pre-commit hook
    make link-skills   # makes every skill here available to Claude Code in all repositories
+   make link-instructions   # points every agent's global rules file at instructions/
    make check         # runs the tests and checks every record: it must say "ok"
    ```
 
@@ -50,6 +51,7 @@ Requirements: [uv](https://docs.astral.sh/uv/), `make`, `git`, the `gh` CLI logg
 
 | Folder | What goes in it | Example | How to add one |
 | --- | --- | --- | --- |
+| `instructions/` | My global rules for every coding agent: how I want them to work in any project | `AGENTS.md`: ask before risky operations, verify before claiming | Edit `AGENTS.md`; it applies at once in every agent |
 | `skills/` | Agent skills: a flow an agent follows, one folder per skill with a `SKILL.md` | `skills/ship/SKILL.md`: lint, commit and push | Create `skills/<name>/SKILL.md`, then `make link-skills` |
 | `decisions/` | Decision records: what I decided, why, and what it costs | `DR-48d815`: one public repository, skills installable one by one | `uv run ai-office new decision "Title"` |
 | `knowledge/` | Durable learnings any agent can read, instead of per-user agent memory | How a tool behaves, a pitfall, a working setup | `uv run ai-office new knowledge "Title"` |
@@ -73,6 +75,24 @@ A personal skill may depend on my machine: `ship` uses scripts from my dotfiles.
 A project skill must work on any machine that clones the repository.
 
 ## How to
+
+### Change my global rules for agents
+
+Edit `instructions/AGENTS.md`.
+Every agent reads it through a link, so the change applies at the next session start:
+
+| Agent | Its global rules file, linked by `make link-instructions` |
+| --- | --- |
+| Claude Code | `~/.claude/CLAUDE.md` → `instructions/CLAUDE.md`, which imports `AGENTS.md` and `RTK.md` |
+| Codex | `~/.codex/AGENTS.md` → `instructions/AGENTS.md` |
+| OpenCode | `~/.config/opencode/AGENTS.md` → `instructions/AGENTS.md` |
+| Pi | `~/.pi/agent/AGENTS.md` → `instructions/AGENTS.md` |
+| GitHub Copilot CLI | `~/.copilot/copilot-instructions.md` → `instructions/AGENTS.md` |
+| Gemini CLI | `~/.gemini/GEMINI.md` → `instructions/AGENTS.md` |
+
+Hermes has no global rules file, and Cursor keeps global rules only in its settings screen.
+Only Claude Code, Copilot and Gemini understand `@file` imports, so `AGENTS.md` must never contain one: a test checks it.
+A new agent: add its path to `INSTRUCTION_LINKS` in the `Makefile` and to the test in `tests/test_instructions.py`.
 
 ### Use a skill
 

@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Run every check before a commit lands on main.
+set -e
+make check

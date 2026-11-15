@@ -1,5 +1,6 @@
 import datetime as dt
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -95,6 +96,48 @@ def test_install_command_pins_the_cli_version() -> None:
         "npx", "-y", f"skills@{skills.SKILLS_CLI_PINNED}", "add", "islomar/ai-office",
         "--skill", "ship", "-a", "claude-code", "-a", "opencode", "-y",
     ]  # fmt: skip
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_workflow_template_uses_the_pinned_cli_and_no_other_version() -> None:
+    template = (REPO_ROOT / skills.WORKFLOW_TEMPLATE).read_text()
+
+    assert re.findall(r"skills@[\w.\-]+", template) == [f"skills@{skills.SKILLS_CLI_PINNED}"]
+
+
+def test_workflow_template_pins_actions_to_full_commits() -> None:
+    template = (REPO_ROOT / skills.WORKFLOW_TEMPLATE).read_text()
+    uses = re.findall(r"uses:\s*(\S+)", template)
+
+    assert uses and all(re.fullmatch(r"[\w\-]+/[\w\-]+@[0-9a-f]{40}", u) for u in uses)
+
+
+def test_workflow_status_and_write(tmp_path: Path) -> None:
+    assert skills.workflow_status(REPO_ROOT, tmp_path) == "missing"
+
+    written = skills.write_workflow(REPO_ROOT, tmp_path)
+    assert written == tmp_path / ".github/workflows/skills-update.yml"
+    assert skills.workflow_status(REPO_ROOT, tmp_path) == "current"
+
+    written.write_text(written.read_text().replace("skills@", "skills@0.0.0-"))
+    assert skills.workflow_status(REPO_ROOT, tmp_path) == "outdated"
+
+
+def test_allow_pull_requests_keeps_default_token_permissions() -> None:
+    command = skills.allow_pull_requests_command("me/repo", {"default_workflow_permissions": "write"})
+
+    assert command[-4:] == ["-f", "default_workflow_permissions=write", "-F", "can_approve_pull_request_reviews=true"]
+    assert "repos/me/repo/actions/permissions/workflow" in command
+
+
+def test_update_notice_names_every_place_that_holds_the_pin() -> None:
+    notice = skills.update_notice("1.0.0", {"1.1.0": "2026-10-01T00:00:00Z"}, TODAY)
+
+    assert "tools/ai_office/skills.py" in notice
+    assert str(skills.WORKFLOW_TEMPLATE) in notice
+    assert "~/.claude/settings.json" in notice
 
 
 def test_permission_rule_is_found_in_settings(tmp_path: Path) -> None:

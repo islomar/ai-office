@@ -27,6 +27,9 @@ npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code -a openc
 The CLI version is pinned. `uv run ai-office install-plan <name>` prints the install command and says when a newer release has been public for at least 7 days.
 In Claude Code, `/list-my-skills` and `/install-my-skill <name>` wrap these commands.
 
+`/install-my-skill` also writes [`templates/skills-update.yml`](templates/skills-update.yml) to `.github/workflows/` in the target repository.
+Every Monday it runs `skills check`; when an installed skill has a new version, it runs `skills update` and opens a pull request for review.
+
 ## Development
 
 Requires [uv](https://docs.astral.sh/uv/) and `make`.

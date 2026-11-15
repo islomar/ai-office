@@ -35,15 +35,21 @@ def main(argv: list[str] | None = None) -> int:
 
     plan = commands.add_parser("install-plan", help="check a skill can be installed and print the command")
     plan.add_argument("name")
-    plan.add_argument("--agent", action="append", help="target agent (repeatable), default claude-code")
+    plan.add_argument("--agent", action="append", help="target agent (repeatable), default claude-code and opencode")
+
+    commands.add_parser("write-workflow", help="write the skills update workflow into the current repository")
 
     args = parser.parse_args(argv)
-    root = Path(__file__).resolve().parents[2] if args.command in ("list-skills", "install-plan") else find_root(Path.cwd())
+    tool_commands = ("list-skills", "install-plan", "write-workflow")
+    root = Path(__file__).resolve().parents[2] if args.command in tool_commands else find_root(Path.cwd())
 
     if args.command == "list-skills":
         return list_skills(root, args.repo.resolve())
     if args.command == "install-plan":
         return install_plan(root, args.name, tuple(args.agent or skills.DEFAULT_AGENTS))
+    if args.command == "write-workflow":
+        print(f"wrote {skills.write_workflow(root, Path.cwd())}")
+        return 0
 
     if args.command == "new":
         path = records.create(root, args.kind, args.title)
@@ -93,7 +99,29 @@ def install_plan(root: Path, name: str, agents: tuple[str, ...]) -> int:
     if blocked:
         return 1
     print("COMMAND: " + shlex.join(skills.install_command(name, agents)))
+    report_update_workflow(root, Path.cwd())
     return 0
+
+
+def report_update_workflow(root: Path, repo: Path) -> None:
+    status = skills.workflow_status(root, repo)
+    if status == "current":
+        print(f"WORKFLOW: {skills.WORKFLOW_PATH} is current.")
+    else:
+        print(f"WORKFLOW: {skills.WORKFLOW_PATH} is {status}. "
+              "Write it with: uv run --project ~/workspace/ai-office ai-office write-workflow")
+    slug = skills.github_slug(repo)
+    if slug is None:
+        print("SETTING: no GitHub repository found; the workflow runs only once this repository is on GitHub.")
+        return
+    current = skills.actions_workflow_permissions(slug)
+    if current is None:
+        print(f"SETTING: could not read the Actions settings of {slug}; check them by hand.")
+    elif current.get("can_approve_pull_request_reviews"):
+        print(f"SETTING: GitHub Actions can open pull requests in {slug}.")
+    else:
+        print(f"SETTING: GitHub Actions cannot open pull requests in {slug}. "
+              "Allow it with: " + shlex.join(skills.allow_pull_requests_command(slug, current)))
 
 
 if __name__ == "__main__":

@@ -20,7 +20,11 @@ SKILLS_CLI_PACKAGE = "skills"
 SKILLS_CLI_PINNED = "1.7.6"
 MIN_RELEASE_AGE_DAYS = 7
 SOURCE_REPOSITORY = "islomar/ai-office"
-DEFAULT_AGENTS = ("claude-code",)
+# Two agents make the CLI keep one copy in .agents/skills and link it from .claude/skills.
+# A single claude-code target copies into .claude/skills, and the first `update` then moves it.
+DEFAULT_AGENTS = ("claude-code", "opencode")
+WORKFLOW_TEMPLATE = Path("templates/skills-update.yml")
+WORKFLOW_PATH = Path(".github/workflows/skills-update.yml")
 FRONT_MATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
 SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
 
@@ -87,9 +91,58 @@ def update_notice(pinned: str, release_times: dict[str, str], today: dt.date) ->
     return (
         f"UPDATE AVAILABLE: skills CLI {candidate} ({releases[candidate]}) is at least "
         f"{MIN_RELEASE_AGE_DAYS} days old; the pin is {pinned}. "
-        f"Read its changelog, then update SKILLS_CLI_PINNED in tools/ai_office/skills.py "
-        f"and the allow rule '{permission_rule(candidate)}' in ~/.claude/settings.json."
+        f"Read its changelog, then update SKILLS_CLI_PINNED in tools/ai_office/skills.py, "
+        f"SKILLS_CLI in {WORKFLOW_TEMPLATE}, and the allow rule '{permission_rule(candidate)}' "
+        f"in ~/.claude/settings.json."
     )
+
+
+def workflow_status(root: Path, repo: Path) -> str:
+    """Return 'missing', 'outdated' or 'current' for the update workflow in `repo`."""
+    installed = repo / WORKFLOW_PATH
+    if not installed.is_file():
+        return "missing"
+    template = (root / WORKFLOW_TEMPLATE).read_text(encoding="utf-8")
+    return "current" if installed.read_text(encoding="utf-8") == template else "outdated"
+
+
+def write_workflow(root: Path, repo: Path) -> Path:
+    target = repo / WORKFLOW_PATH
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text((root / WORKFLOW_TEMPLATE).read_text(encoding="utf-8"), encoding="utf-8")
+    return target
+
+
+def github_slug(repo: Path) -> str | None:
+    try:
+        result = subprocess.run(
+            ["gh", "repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"],
+            cwd=repo, capture_output=True, text=True, timeout=20, check=True,
+        )  # fmt: skip
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return result.stdout.strip() or None
+
+
+def actions_workflow_permissions(slug: str) -> dict | None:
+    """The repository's Actions settings: default_workflow_permissions, can_approve_pull_request_reviews."""
+    try:
+        result = subprocess.run(
+            ["gh", "api", f"repos/{slug}/actions/permissions/workflow"],
+            capture_output=True, text=True, timeout=20, check=True,
+        )  # fmt: skip
+        return json.loads(result.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+        return None
+
+
+def allow_pull_requests_command(slug: str, current: dict) -> list[str]:
+    """`gh api` call that lets Actions open pull requests and keeps the default token permissions."""
+    return [
+        "gh", "api", "-X", "PUT", f"repos/{slug}/actions/permissions/workflow",
+        "-f", f"default_workflow_permissions={current.get('default_workflow_permissions', 'read')}",
+        "-F", "can_approve_pull_request_reviews=true",
+    ]  # fmt: skip
 
 
 def fetch_release_times(package: str = SKILLS_CLI_PACKAGE) -> dict[str, str] | None:

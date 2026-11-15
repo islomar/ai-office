@@ -20,9 +20,12 @@ Skills live in `skills/<name>/SKILL.md`, the layout read by the [skills CLI](htt
 It installs one skill into Claude Code, OpenCode, GitHub Copilot, Codex, Pi, Hermes Agent and other agents:
 
 ```bash
-npx skills add islomar/ai-office --list
-npx skills add islomar/ai-office --skill <name> -a claude-code -a opencode
+npx -y skills@1.7.6 add islomar/ai-office --list
+npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code -a opencode
 ```
+
+The CLI version is pinned. `uv run ai-office install-plan <name>` prints the install command and says when a newer release has been public for at least 7 days.
+In Claude Code, `/list-my-skills` and `/install-my-skill <name>` wrap these commands.
 
 ## Development
 

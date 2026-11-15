@@ -88,7 +88,7 @@ Every agent reads it through a link, so the change applies at the next session s
 | OpenCode | `~/.config/opencode/AGENTS.md` → `instructions/AGENTS.md` |
 | Pi | `~/.pi/agent/AGENTS.md` → `instructions/AGENTS.md` |
 | GitHub Copilot CLI | `~/.copilot/copilot-instructions.md` → `instructions/AGENTS.md` |
-| Gemini CLI | `~/.gemini/GEMINI.md` → `instructions/AGENTS.md` |
+| Gemini CLI and Antigravity CLI (`agy`) | `~/.gemini/GEMINI.md` → `instructions/AGENTS.md`. Both read this file. Do not add `~/.gemini/AGENTS.md`: `agy` also reads that name, and would load the rules twice |
 
 Hermes has no global rules file, and Cursor keeps global rules only in its settings screen.
 Only Claude Code, Copilot and Gemini understand `@file` imports, so `AGENTS.md` must never contain one: a test checks it.

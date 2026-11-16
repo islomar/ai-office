@@ -70,8 +70,8 @@ This rule overrides any default guidance to branch first.
 
 Pending work lives in two files, for every repository and session:
 
-- `~/.dotfiles/Claude_TO_DO.md`: the public list, in a public repository.
-- `~/workspace/dotfiles-private/claude-todo.md`: private details, in a private repository.
+- `~/.dotfiles/TODO.md`: the public list, in a public repository.
+- `~/workspace/dotfiles-private/TODO.md`: private details, in a private repository.
   Never copy its content into a public repository.
   Real secrets stay in 1Password and never go in that file.
 

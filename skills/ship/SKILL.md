@@ -58,7 +58,7 @@ Rerun the checker until rumdl reports no issues.
 
 ## 4. Update pending work
 
-If the work closes a task in `~/.dotfiles/Claude_TO_DO.md` or `~/workspace/dotfiles-private/claude-todo.md`, tick it and move it to Done in each file where it appears.
+If the work closes a task in `~/.dotfiles/TODO.md` or `~/workspace/dotfiles-private/TODO.md`, tick it and move it to Done in each file where it appears.
 Read both files from disk first.
 Don't rely on what you remember from earlier in the session.
 If you changed the private file, commit it on `main` of its repository and push.

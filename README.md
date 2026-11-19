@@ -7,6 +7,15 @@ The code of each project stays in its own repository.
 This repository is public, to show what I am doing, testing and learning.
 Anything private goes to a separate private repository.
 
+## Origins of the idea
+
+- Eduardo Ferro's blog post
+[Turning up the dial: seeing the forest while working on any tree](https://www.eferro.net/2026/10/turning-up-dial-seeing-forest-while.html).
+- Matt Pocock's Home Repo
+  - [The Home Repo: The effortless multi-repo agent setup](https://www.youtube.com/watch?v=hWe-j78vNpc)
+  - [The Home Repo Pattern](https://www.aihero.dev/the-home-repo-pattern)
+  - [Home Repo](https://www.aihero.dev/ai-coding-dictionary/home-repo)
+
 ## The idea in three rules
 
 This repository follows

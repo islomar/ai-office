@@ -34,7 +34,8 @@ Each folder has a README with its front-matter schema.
 
 ## Working rules
 
-- Create records with the tool, never by hand: `uv run ai-office new task|decision|knowledge "Title"`.
+- The Makefile lists everything you can do here: run `make` to see every target.
+- Create records with `make new-task|new-decision|new-knowledge TITLE="..."`, never by hand.
   It assigns a random-suffix ID, so parallel sessions never collide.
 - Run `make check` before every commit. The pre-commit hook runs it too.
 - Work in small, safe steps on `main`.

@@ -14,7 +14,7 @@ Without a name, run `/list-my-skills` and ask which one.
 Run from the root of the current repository:
 
 ```bash
-uv run --project ~/workspace/ai-office ai-office install-plan <name> [--agent <agent> ...]
+make -C ~/workspace/ai-office install-plan SKILL=<name> REPO="$PWD" [AGENTS="<agent> ..."]
 ```
 
 - `BLOCKED:` stop and report the reason. An unpublished skill must be shipped from `~/workspace/ai-office` first.
@@ -37,7 +37,7 @@ Wait for an explicit yes. The user may accept the install and refuse the workflo
 ## 3. Install
 
 1. Run the `COMMAND:` line exactly as printed, from the repository root.
-2. If accepted, run `uv run --project ~/workspace/ai-office ai-office write-workflow`.
+2. If accepted, run `make -C ~/workspace/ai-office write-workflow REPO="$PWD"`.
 3. If accepted, run the `gh api` command from the `SETTING:` line.
    Then rerun `install-plan` and confirm the line says Actions can open pull requests.
 

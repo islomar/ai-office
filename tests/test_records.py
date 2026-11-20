@@ -105,3 +105,27 @@ def test_private_memory_check_skips_tool_sources(root: Path) -> None:
     (root / "tools" / "notes.md").write_text("pattern: .claude/projects/x/memory\n")
 
     assert records.check(root) == []
+
+
+def set_status(path: Path, status: str) -> None:
+    path.write_text(path.read_text().replace("status: open", f"status: {status}"))
+
+
+def test_pending_tasks_leave_out_done_and_discarded_and_put_work_in_progress_first(root: Path) -> None:
+    old = records.create(root, "task", "Old open task", today=dt.date(2026, 11, 1))
+    records.create(root, "task", "New open task", today=dt.date(2026, 11, 20))
+    set_status(records.create(root, "task", "Started task", today=dt.date(2026, 11, 10)), "doing")
+    set_status(records.create(root, "task", "Merged task", today=dt.date(2026, 11, 5)), "validating")
+    set_status(records.create(root, "task", "Finished task", today=dt.date(2026, 11, 2)), "done")
+    set_status(records.create(root, "task", "Dropped task", today=dt.date(2026, 11, 3)), "discarded")
+
+    pending = records.pending_tasks(root)
+
+    assert [(t.status, t.title) for t in pending] == [
+        ("doing", "Started task"),
+        ("validating", "Merged task"),
+        ("open", "Old open task"),
+        ("open", "New open task"),
+    ]
+    assert pending[2].id == records.read_front_matter(old)["id"]
+    assert pending[2].created == dt.date(2026, 11, 1)

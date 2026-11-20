@@ -46,10 +46,11 @@ This repository follows
 3. See what exists:
 
    ```bash
+   make               # every target: the full list of what you can do here
    make skills        # the skills, one line each
+   make tasks         # what is pending, work in progress first
    ls decisions/      # what was decided, and why
    ls knowledge/      # what was learned
-   ls tasks/          # what is pending
    ```
 
 4. Read [AGENTS.md](AGENTS.md): it holds the rules that agents follow here.
@@ -62,16 +63,16 @@ Requirements: [uv](https://docs.astral.sh/uv/), `make`, `git`, the `gh` CLI logg
 | --- | --- | --- | --- |
 | `instructions/` | My global rules for every coding agent: how I want them to work in any project | `AGENTS.md`: ask before risky operations, verify before claiming | Edit `AGENTS.md`; it applies at once in every agent |
 | `skills/` | Agent skills: a flow an agent follows, one folder per skill with a `SKILL.md` | `skills/ship/SKILL.md`: lint, commit and push | Create `skills/<name>/SKILL.md`, then `make link-skills` |
-| `decisions/` | Decision records: what I decided, why, and what it costs | `DR-48d815`: one public repository, skills installable one by one | `uv run ai-office new decision "Title"` |
-| `knowledge/` | Durable learnings any agent can read, instead of per-user agent memory | How a tool behaves, a pitfall, a working setup | `uv run ai-office new knowledge "Title"` |
-| `tasks/` | Pending work for this repository, one file per task, with a why and a status | Move a skill here from another repository | `uv run ai-office new task "Title"` |
+| `decisions/` | Decision records: what I decided, why, and what it costs | `DR-48d815`: one public repository, skills installable one by one | `make new-decision TITLE="Title"` |
+| `knowledge/` | Durable learnings any agent can read, instead of per-user agent memory | How a tool behaves, a pitfall, a working setup | `make new-knowledge TITLE="Title"` |
+| `tasks/` | Pending work for this repository, one file per task, with a why and a status | Move a skill here from another repository | `make new-task TITLE="Title"` |
 | `templates/` | Files that tools copy into other repositories | `skills-update.yml`: the weekly skill update workflow | Add the file and the tool that copies it |
 | `tools/` | Python code behind the `ai-office` command | `skills.py`: list and install skills | Add code with tests in `tests/` |
 | `tests/` | Tests for `tools/` and `templates/` | `test_skills.py` | `make test` runs them |
 | `.githooks/` | The pre-commit hook: runs `make check` before every commit | | `make setup` turns it on |
 
 Each of `tasks/`, `decisions/` and `knowledge/` has a README with its required front matter and statuses.
-Create records with `uv run ai-office new`, never by hand: it adds a random ID (for example `DR-48d815`), so two sessions never pick the same number.
+Create records with `make new-task`, `make new-decision` or `make new-knowledge`, never by hand: it adds a random ID (for example `DR-48d815`), so two sessions never pick the same number.
 
 ## Two kinds of skills
 
@@ -142,9 +143,9 @@ It does not commit: review the files, then `/ship` or commit by hand.
 Without Claude Code, the same steps by hand:
 
 ```bash
-uv run --project ~/workspace/ai-office ai-office install-plan <name>   # checks and prints the command
+make -C ~/workspace/ai-office install-plan SKILL=<name> REPO="$PWD"   # checks and prints the command
 npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code -a opencode -y
-uv run --project ~/workspace/ai-office ai-office write-workflow
+make -C ~/workspace/ai-office write-workflow REPO="$PWD"
 ```
 
 ### Keep installed skills up to date
@@ -173,9 +174,9 @@ Then:
 ### Record a decision, a learning or a task
 
 ```bash
-uv run ai-office new decision "Use X instead of Y"
-uv run ai-office new knowledge "How X behaves when Y"
-uv run ai-office new task "Do X"
+make new-decision TITLE="Use X instead of Y"
+make new-knowledge TITLE="How X behaves when Y"
+make new-task TITLE="Do X"
 ```
 
 Each command prints the new file. Open it and fill the sections its folder README describes.

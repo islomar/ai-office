@@ -8,7 +8,7 @@ description: List the skills kept in ~/workspace/ai-office/skills and show which
 Run from the current repository:
 
 ```bash
-uv run --project ~/workspace/ai-office ai-office list-skills
+make -s -C ~/workspace/ai-office skills REPO="$PWD"
 ```
 
 Show the output as a table: name, description, installed here (yes or no).

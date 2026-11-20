@@ -1,7 +1,7 @@
 # Tasks
 
 One Markdown file per task: `T-<6 hex>-<slug>.md`.
-Create one with `uv run ai-office new task "Title"`.
+Create one with `make new-task TITLE="Title"`.
 
 ## Front matter
 

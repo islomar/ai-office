@@ -145,3 +145,25 @@ def check_private_memory(root: Path) -> list[Problem]:
 
 def check(root: Path) -> list[Problem]:
     return check_records(root) + check_private_memory(root)
+
+
+@dataclass(frozen=True)
+class Task:
+    id: str
+    status: str
+    created: dt.date
+    title: str
+
+
+# Work in progress first: a started or merged task needs attention before a new one.
+PENDING_ORDER = ("doing", "validating", "open")
+
+
+def pending_tasks(root: Path) -> list[Task]:
+    """Tasks that still need work, in progress first, then oldest first."""
+    found = []
+    for path in sorted((root / KINDS["task"]["folder"]).glob("T-*.md")):
+        meta = read_front_matter(path) or {}
+        if meta.get("status") in PENDING_ORDER:
+            found.append(Task(meta["id"], meta["status"], meta["created"], meta["title"]))
+    return sorted(found, key=lambda t: (PENDING_ORDER.index(t.status), t.created, t.id))

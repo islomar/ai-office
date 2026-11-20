@@ -1,7 +1,7 @@
 # Knowledge
 
 Durable learnings that any agent harness can read: one topic per file, `K-<6 hex>-<slug>.md`.
-Create one with `uv run ai-office new knowledge "Title"`.
+Create one with `make new-knowledge TITLE="Title"`.
 
 This folder replaces per-user harness memory.
 When a session learns something a later session needs, it goes here.

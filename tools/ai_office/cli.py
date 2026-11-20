@@ -1,4 +1,4 @@
-"""Command line entry point: `uv run ai-office <command>`."""
+"""Command line entry point: `uv run ai-office <command>`. The Makefile wraps every command."""
 
 from __future__ import annotations
 
@@ -30,6 +30,8 @@ def main(argv: list[str] | None = None) -> int:
 
     commands.add_parser("check", help="check every record and instruction file")
 
+    commands.add_parser("list-tasks", help="list the tasks that still need work")
+
     listing = commands.add_parser("list-skills", help="list the skills in skills/")
     listing.add_argument("--repo", type=Path, default=Path.cwd(), help="mark the skills installed in this repository")
 
@@ -51,6 +53,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"wrote {skills.write_workflow(root, Path.cwd())}")
         return 0
 
+    if args.command == "list-tasks":
+        return list_tasks(root)
+
     if args.command == "new":
         path = records.create(root, args.kind, args.title)
         print(path.relative_to(root))
@@ -63,6 +68,14 @@ def main(argv: list[str] | None = None) -> int:
         print(f"ai-office check: {len(problems)} problem(s)", file=sys.stderr)
         return 1
     print("ai-office check: ok")
+    return 0
+
+
+def list_tasks(root: Path) -> int:
+    pending = records.pending_tasks(root)
+    print(f"Pending tasks in {root / 'tasks'} ({len(pending)})")
+    for task in pending:
+        print(f"{task.id}  {task.status:<10}  {task.created}  {task.title}")
     return 0
 
 
@@ -109,7 +122,7 @@ def report_update_workflow(root: Path, repo: Path) -> None:
         print(f"WORKFLOW: {skills.WORKFLOW_PATH} is current.")
     else:
         print(f"WORKFLOW: {skills.WORKFLOW_PATH} is {status}. "
-              "Write it with: uv run --project ~/workspace/ai-office ai-office write-workflow")
+              "Write it with: make -C ~/workspace/ai-office write-workflow REPO=\"$PWD\"")
     slug = skills.github_slug(repo)
     if slug is None:
         print("SETTING: no GitHub repository found; the workflow runs only once this repository is on GitHub.")

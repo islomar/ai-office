@@ -60,6 +60,14 @@ Before starting git/GitHub work, verify `gh auth status` succeeds.
 Before Python CLI work, confirm the target Python and ask whether I prefer pipx or venv.
 If a precondition fails, stop and tell me what to install rather than working around it.
 
+## Makefile
+
+In every repository, the Makefile is the entry point for everything a person or an agent can run.
+`make` with no target runs `make help`, which lists every target with a one-line description.
+Run work through a target.
+When a repository needs a new command, add it as a target with a `## description` comment.
+A repository without a Makefile gets one when it first needs a command.
+
 ## Git Branches
 
 By default, do not create or work on a git branch unless I explicitly allow it.
@@ -76,10 +84,10 @@ Pending work lives in two files, for every repository and session except `ai-off
   Never copy its content into a public repository.
   Real secrets stay in 1Password and never go in that file.
 
-`~/workspace/ai-office` keeps its own pending work in its `tasks/` folder, one file per task, created with `uv run ai-office new task`.
+`~/workspace/ai-office` keeps its own pending work in its `tasks/` folder, one file per task, created with `make new-task TITLE="..."`.
 Never add its tasks to `TODO.md`.
 
-When asked what is pending, read both files and the open tasks in `~/workspace/ai-office/tasks/`.
+When asked what is pending, read both files and run `make -C ~/workspace/ai-office tasks`.
 When you leave a task open, add it to the public list.
 When you finish one, tick it and move it to Done, in both files if it appears in both.
 Whenever the private file changes, commit it on `main` of its repository and push.

@@ -1,7 +1,7 @@
 # Decisions
 
 One decision record per file: `DR-<6 hex>-<slug>.md`.
-Create one with `uv run ai-office new decision "Title"`.
+Create one with `make new-decision TITLE="Title"`.
 IDs use a random suffix, not a sequence, so two sessions never pick the same number.
 
 ## Front matter

@@ -43,3 +43,4 @@ Candidates reviewed on 2026-11-16:
 ### Log
 
 - 2026-11-16: Task created after reviewing existing skills.
+- 2026-11-20: `~/workspace/dotfiles/scripts/claude-session-export` already turns a transcript into Markdown. Reuse it or build on it.

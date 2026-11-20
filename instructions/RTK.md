@@ -26,4 +26,7 @@ which rtk             # Verify correct binary
 All other commands are automatically rewritten by the Claude Code hook.
 Example: `git status` → `rtk git status` (transparent, 0 tokens overhead)
 
+A gate reads the raw exit code. Use `rtk proxy <cmd>` when the exact output matters.
+See `~/workspace/ai-office/knowledge/K-85d0ea-gates-read-raw-exit-codes-not-filtered-output.md`.
+
 Refer to CLAUDE.md for full command reference.

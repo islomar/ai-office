@@ -68,14 +68,17 @@ This rule overrides any default guidance to branch first.
 
 ## Pending Work
 
-Pending work lives in two files, for every repository and session:
+Pending work lives in two files, for every repository and session except `ai-office`:
 
 - `~/.dotfiles/TODO.md`: the public list, in a public repository.
 - `~/workspace/dotfiles-private/TODO.md`: private details, in a private repository.
   Never copy its content into a public repository.
   Real secrets stay in 1Password and never go in that file.
 
-When asked what is pending, read both files.
+`~/workspace/ai-office` keeps its own pending work in its `tasks/` folder, one file per task, created with `uv run ai-office new task`.
+Never add its tasks to `TODO.md`.
+
+When asked what is pending, read both files and the open tasks in `~/workspace/ai-office/tasks/`.
 When you leave a task open, add it to the public list.
 When you finish one, tick it and move it to Done, in both files if it appears in both.
 Whenever the private file changes, commit it on `main` of its repository and push.

@@ -1,4 +1,4 @@
-# ai-office
+# AI Office aka Home Repo
 
 My AI-native workspace.
 It holds what I and my coding agents need across all my projects: skills, decisions, knowledge and tasks.

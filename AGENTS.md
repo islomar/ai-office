@@ -13,6 +13,7 @@ Never write it into per-user harness memory, and never point an instruction file
 ## This repository is public
 
 Write nothing private: no credentials, hostnames, machine state, names of other people, employers or clients.
+Public authors cited for their published work, such as books, talks or posts, are fine.
 Anything private belongs in a separate private repository.
 
 ## Layout

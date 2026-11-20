@@ -195,3 +195,23 @@ def test_never_committed_skill_is_reported(published_repo: Path) -> None:
     write_skill(published_repo, "draft")
 
     assert skills.unpublished_reason(published_repo, "draft") == "skills/draft has uncommitted changes"
+
+
+@pytest.mark.parametrize(
+    "stdout",
+    [
+        '{"created": "2016-10-06T18:56:01.340Z", "1.7.6": "2026-10-01T10:00:00.000Z"}',
+        # npm 12 wraps the object in a list.
+        '[{"created": "2016-10-06T18:56:01.340Z", "1.7.6": "2026-10-01T10:00:00.000Z"}]',
+    ],
+)
+def test_release_times_read_both_npm_output_shapes(stdout: str) -> None:
+    assert skills.parse_release_times(stdout) == {
+        "created": "2016-10-06T18:56:01.340Z",
+        "1.7.6": "2026-10-01T10:00:00.000Z",
+    }
+
+
+@pytest.mark.parametrize("stdout", ["[]", '["1.7.6"]', '"text"', "not json"])
+def test_unexpected_npm_output_gives_no_release_times(stdout: str) -> None:
+    assert skills.parse_release_times(stdout) is None

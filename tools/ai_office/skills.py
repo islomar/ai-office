@@ -150,9 +150,20 @@ def fetch_release_times(package: str = SKILLS_CLI_PACKAGE) -> dict[str, str] | N
         result = subprocess.run(
             ["npm", "view", package, "time", "--json"], capture_output=True, text=True, timeout=20, check=True
         )
-        return json.loads(result.stdout)
-    except (OSError, subprocess.SubprocessError, json.JSONDecodeError):
+    except (OSError, subprocess.SubprocessError):
         return None
+    return parse_release_times(result.stdout)
+
+
+def parse_release_times(stdout: str) -> dict[str, str] | None:
+    """Read `npm view <package> time --json`. npm 12 wraps the object in a one-item list."""
+    try:
+        data = json.loads(stdout)
+    except json.JSONDecodeError:
+        return None
+    if isinstance(data, list) and len(data) == 1:
+        data = data[0]
+    return data if isinstance(data, dict) else None
 
 
 def permission_rule(version: str = SKILLS_CLI_PINNED) -> str:

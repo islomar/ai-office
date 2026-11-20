@@ -1,7 +1,7 @@
 ---
 id: T-259c62
 title: Fix install-plan with npm 12 view output
-status: open
+status: done
 created: 2026-11-20
 ---
 
@@ -22,3 +22,4 @@ With npm 12.2.3, `npm view skills time --json` returns a list that holds one obj
 ### Log
 
 - 2026-11-20: found while smoke-testing the new `install-plan` target. The bug predates the target.
+- 2026-11-20: fixed with `parse_release_times`, which accepts both shapes. `make install-plan SKILL=spec-polish REPO=~/workspace/my-notes` printed its `COMMAND:` line.

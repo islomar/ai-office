@@ -149,6 +149,12 @@ def test_permission_rule_is_found_in_settings(tmp_path: Path) -> None:
     assert not skills.has_permission_rule(tmp_path / "missing.json")
 
 
+def test_git_commands_in_tests_ignore_the_commit_in_progress() -> None:
+    env = subprocess.run(["env"], capture_output=True, text=True, check=True).stdout
+
+    assert [line for line in env.splitlines() if line.startswith("GIT_")] == []
+
+
 @pytest.fixture
 def published_repo(tmp_path: Path) -> Path:
     remote, repo = tmp_path / "remote.git", tmp_path / "repo"

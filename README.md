@@ -144,7 +144,7 @@ Without Claude Code, the same steps by hand:
 
 ```bash
 make -C ~/workspace/ai-office install-plan SKILL=<name> REPO="$PWD"   # checks and prints the command
-npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code -a opencode -y
+npx -y skills@1.8.1 add islomar/ai-office --skill <name> -a claude-code -a opencode -y
 make -C ~/workspace/ai-office write-workflow REPO="$PWD"
 ```
 
@@ -159,7 +159,7 @@ Pull requests opened by that workflow do not start the repository's other workfl
 
 ### Update the skills CLI version
 
-The skills CLI is pinned to one version (now 1.7.6), so a new and possibly compromised npm release never runs unnoticed.
+The skills CLI is pinned to one version (now 1.8.1), so a new and possibly compromised npm release never runs unnoticed.
 `/install-my-skill` says `UPDATE AVAILABLE` when a newer release has been public for at least 7 days.
 Then:
 

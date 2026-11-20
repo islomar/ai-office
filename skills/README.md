@@ -9,5 +9,5 @@ A gate is a point where the agent stops and waits for a human decision.
 Install one skill in another project:
 
 ```bash
-npx -y skills@1.7.6 add islomar/ai-office --skill <name> -a claude-code
+npx -y skills@1.8.1 add islomar/ai-office --skill <name> -a claude-code
 ```

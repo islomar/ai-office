@@ -17,7 +17,7 @@ from pathlib import Path
 import yaml
 
 SKILLS_CLI_PACKAGE = "skills"
-SKILLS_CLI_PINNED = "1.7.6"
+SKILLS_CLI_PINNED = "1.8.1"
 MIN_RELEASE_AGE_DAYS = 7
 SOURCE_REPOSITORY = "islomar/ai-office"
 # Two agents make the CLI keep one copy in .agents/skills and link it from .claude/skills.

@@ -1,9 +1,9 @@
 ---
-name: ship
-description: Lint, commit and push the pending changes of the current repository on main. Use when the user says ship, commit and push, or commit this.
+name: commit-and-push
+description: Lint, commit and push the pending changes of the current repository on main. Use when the user says commit and push, or commit this.
 ---
 
-# Ship
+# Commit and push
 
 Requires the dotfiles of `islomar/dotfiles`: `~/.dotfiles/scripts/check-markdown.sh` and its Vale vocabulary.
 

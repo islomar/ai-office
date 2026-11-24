@@ -51,7 +51,7 @@ For disk reorganizations, history rewrites, bulk moves or deletions, and system 
 - Lint only the changed files: `~/.dotfiles/scripts/check-markdown.sh <files>`.
   Vale on a whole repository can pass the 2-minute command limit.
 - When Vale flags a correct word, add it to the Vale vocabulary in `~/.dotfiles/config/vale` instead of rewording correct text.
-- To commit and push, use the `/ship` skill.
+- To commit and push, use the `/commit-and-push` skill.
 - Never use `--no-verify` unless I say yes to it for that push.
 
 ## Tooling Preconditions

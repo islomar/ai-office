@@ -62,7 +62,7 @@ Requirements: [uv](https://docs.astral.sh/uv/), `make`, `git`, the `gh` CLI logg
 | Folder | What goes in it | Example | How to add one |
 | --- | --- | --- | --- |
 | `instructions/` | My global rules for every coding agent: how I want them to work in any project | `AGENTS.md`: ask before risky operations, verify before claiming | Edit `AGENTS.md`; it applies at once in every agent |
-| `skills/` | Agent skills: a flow an agent follows, one folder per skill with a `SKILL.md` | `skills/ship/SKILL.md`: lint, commit and push | Create `skills/<name>/SKILL.md`, then `make link-skills` |
+| `skills/` | Agent skills: a flow an agent follows, one folder per skill with a `SKILL.md` | `skills/commit-and-push/SKILL.md`: lint, commit and push | Create `skills/<name>/SKILL.md`, then `make link-skills` |
 | `decisions/` | Decision records: what I decided, why, and what it costs | `DR-48d815`: one public repository, skills installable one by one | `make new-decision TITLE="Title"` |
 | `knowledge/` | Durable learnings any agent can read, instead of per-user agent memory | How a tool behaves, a pitfall, a working setup | `make new-knowledge TITLE="Title"` |
 | `tasks/` | Pending work for this repository, one file per task, with a why and a status | Move a skill here from another repository | `make new-task TITLE="Title"` |
@@ -78,10 +78,10 @@ Create records with `make new-task`, `make new-decision` or `make new-knowledge`
 
 | Kind | Where it runs | How it gets there | Examples |
 | --- | --- | --- | --- |
-| **Personal** | In every repository on my machine, only for me | A link in `~/.claude/skills/`, made by `make link-skills` | `ship`, `list-my-skills`, `install-my-skill` |
+| **Personal** | In every repository on my machine, only for me | A link in `~/.claude/skills/`, made by `make link-skills` | `commit-and-push`, `list-my-skills`, `install-my-skill` |
 | **Project** | In one repository, for anyone and any CI agent working on it | A committed copy in that repository, made by `/install-my-skill` | A review checklist for one project's tickets |
 
-A personal skill may depend on my machine: `ship` uses scripts from my dotfiles.
+A personal skill may depend on my machine: `commit-and-push` uses scripts from my dotfiles.
 A project skill must work on any machine that clones the repository.
 
 ## How to
@@ -106,7 +106,7 @@ A new agent: add its path to `INSTRUCTION_LINKS` in the `Makefile` and to the te
 
 ### Use a skill
 
-In Claude Code, type `/<skill-name>`, for example `/ship`.
+In Claude Code, type `/<skill-name>`, for example `/commit-and-push`.
 Skills in `skills/` work in every repository after `make link-skills`.
 
 ### Create a new skill
@@ -115,13 +115,13 @@ Skills in `skills/` work in every repository after `make link-skills`.
    The description says when to use it: agents read it to decide.
 2. Put any script the skill needs in `tools/`, with tests.
 3. Run `make link-skills`, then try `/<name>` in a new Claude Code session.
-4. Commit and push with `/ship`.
+4. Commit and push with `/commit-and-push`.
 
 ### Change a skill
 
 Edit `skills/<name>/SKILL.md`.
 On this machine the change applies at once, because `~/.claude/skills/<name>` is a link to this folder.
-Push it with `/ship`.
+Push it with `/commit-and-push`.
 Repositories that hold a copy get a pull request with the change the next Monday (see below).
 
 ### List my skills
@@ -138,7 +138,7 @@ It checks the skill is pushed, shows what it will do and waits for my yes. Then 
 2. adds the workflow `.github/workflows/skills-update.yml`;
 3. allows GitHub Actions to open pull requests in that repository, if it was not allowed.
 
-It does not commit: review the files, then `/ship` or commit by hand.
+It does not commit: review the files, then `/commit-and-push` or commit by hand.
 
 Without Claude Code, the same steps by hand:
 

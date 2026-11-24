@@ -45,4 +45,4 @@ Wait for an explicit yes. The user may accept the install and refuse the workflo
 
 - Run `git status --short` and list the new files: `.agents/skills/<name>`, the link in `.claude/skills/<name>`, `skills-lock.json` and the workflow.
 - Say that pull requests opened by the workflow do not trigger other workflows, so CI does not run on them on its own.
-- Do not commit. The user commits with `/ship` or by hand.
+- Do not commit. The user commits with `/commit-and-push` or by hand.

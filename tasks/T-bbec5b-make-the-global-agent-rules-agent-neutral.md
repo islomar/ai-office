@@ -10,7 +10,7 @@ created: 2026-11-20
 ### Why
 
 Every agent reads `instructions/AGENTS.md`, but some lines apply only to Claude Code:
-the `PostToolUse` hook, the `/ship` skill and RTK. Other agents follow instructions they cannot carry out.
+the `PostToolUse` hook, the `/commit-and-push` skill and RTK. Other agents follow instructions they cannot carry out.
 
 ### Steps
 
